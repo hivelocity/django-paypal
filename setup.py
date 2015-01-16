@@ -6,7 +6,7 @@ import paypal
 
 setup(
     name='django-paypal',
-    version=".".join(map(str, paypal.__version__)),
+    version=".".join(map(str, paypal.__version__)) + '-hivelocity',
     author='John Boxall',
     author_email='john@handimobility.ca',
     maintainer="David Cramer",
