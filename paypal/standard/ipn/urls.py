@@ -1,8 +1,6 @@
-try:
-    from django.conf.urls import patterns
-except ImportError: # django < 1.4
-    from django.conf.urls.defaults import patterns
+from django.conf.urls import url
+from paypal.standard.ipn.views import ipn
 
-urlpatterns = patterns('paypal.standard.ipn.views',
-    (r'^$', 'ipn', {}, "paypal-ipn"),
-)
+urlpatterns = [
+    url(r'^$', ipn, {}, "paypal-ipn"),
+]
