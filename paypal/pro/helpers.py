@@ -4,8 +4,8 @@
 import datetime
 import pprint
 import time
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 from django.conf import settings
 from django.forms.models import fields_for_model
@@ -24,7 +24,7 @@ VERSION = 54.0
 BASE_PARAMS = dict(USER=USER , PWD=PASSWORD, SIGNATURE=SIGNATURE, VERSION=VERSION)
 ENDPOINT = "https://api-3t.paypal.com/nvp"
 SANDBOX_ENDPOINT = "https://api-3t.sandbox.paypal.com/nvp"
-NVP_FIELDS = fields_for_model(PayPalNVP).keys()
+NVP_FIELDS = list(fields_for_model(PayPalNVP).keys())
 
 
 def paypal_time(time_obj=None):
@@ -205,7 +205,7 @@ class PayPalWPP(object):
         params['l_billingagreementdescription0'] = params['desc']
 
         REMOVE = L("billingfrequency billingperiod profilestartdate desc")
-        for k in params.keys():
+        for k in list(params.keys()):
             if k in REMOVE:
                 del params[k]
                 
@@ -220,14 +220,14 @@ class PayPalWPP(object):
         response_params = self._parse_response(response)
         
         if getattr(settings, 'PAYPAL_DEBUG', settings.DEBUG):
-            print 'PayPal Request:'
+            print('PayPal Request:')
             pprint.pprint(defaults)
-            print '\nPayPal Response:'
+            print('\nPayPal Response:')
             pprint.pprint(response_params)
 
         # Gather all NVP parameters to pass to a new instance.
         nvp_params = {}
-        for k, v in MergeDict(defaults, response_params).items():
+        for k, v in list(MergeDict(defaults, response_params).items()):
             if k in NVP_FIELDS:
                 nvp_params[str(k)] = v
 
@@ -242,7 +242,7 @@ class PayPalWPP(object):
         
     def _request(self, data):
         """Moved out to make testing easier."""
-        return urllib2.urlopen(self.endpoint, data).read()
+        return urllib.request.urlopen(self.endpoint, data).read()
 
     def _check_and_update_params(self, required, params):
         """
@@ -254,12 +254,12 @@ class PayPalWPP(object):
                 raise PayPalError("Missing required param: %s" % r)    
 
         # Upper case all the parameters for PayPal.
-        return (dict((k.upper(), v) for k, v in params.iteritems()))
+        return (dict((k.upper(), v) for k, v in params.items()))
 
     def _parse_response(self, response):
         """Turn the PayPal response into a dict"""
         response_tokens = {}
         for kv in response.split('&'):
             key, value = kv.split("=")
-            response_tokens[key.lower()] = urllib.unquote(value)
+            response_tokens[key.lower()] = urllib.parse.unquote(value)
         return response_tokens

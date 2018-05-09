@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from paypal.standard.models import PayPalStandardBase
 from paypal.standard.ipn.signals import *
 
 
 class PayPalIPN(PayPalStandardBase):
     """Logs PayPal IPN interactions."""
-    format = u"<IPN: %s %s>"
+    format = "<IPN: %s %s>"
 
     class Meta:
         db_table = "paypal_ipn"
@@ -15,7 +15,7 @@ class PayPalIPN(PayPalStandardBase):
 
     def _postback(self):
         """Perform PayPal Postback validation."""
-        return urllib2.urlopen(self.get_endpoint(), "cmd=_notify-validate&%s" % self.query).read()
+        return urllib.request.urlopen(self.get_endpoint(), "cmd=_notify-validate&%s" % self.query).read()
     
     def _verify_postback(self):
         if self.response != "VERIFIED":
