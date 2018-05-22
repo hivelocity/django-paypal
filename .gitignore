@@ -6,3 +6,5 @@
 /build
 /django_paypal.egg-info
 *.swp
+.DS_STORE
+*.DS_STORE
